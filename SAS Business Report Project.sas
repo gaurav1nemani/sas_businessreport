@@ -57,7 +57,10 @@ RUN;
 
 /*-------------------------------------------------------#######  PART II   #########-------------------------------------------------------*/
 
-ODS PDF FILE='C:\Users\Source\OneDrive - IESEG\Documents\SEMESTER 1 COURSES\Business Analytics Tool - Commercial SAS\Group\Final Coding GN\Report\Test\ExecutiveReportTest.pdf';
+%LET File_Date = %SYSFUNC(TODAY(), YYMMDD8.);
+%LET Current_Time = %SYSFUNC(TIME(), HHMMSS8.);
+
+ODS PDF FILE="C:\Users\Source\OneDrive - IESEG\Documents\SEMESTER 1 COURSES\Business Analytics Tool - Commercial SAS\Group\Final Coding GN\Report\Test\ExecutiveReportTest_&File_Date._&Current_Time..pdf" STYLE=Analysis;
 
 /*Showcase Missing Values in the executive summary*/
 
@@ -175,7 +178,12 @@ DATA Group4.BaseTable;
 	DROP _TYPE_ _FREQ_ Nbr_Customers;
 RUN;
 
-PROC PRINT DATA=Group4.BaseTable (OBS=5) NOOBS;
+DATA Group4.BaseTable_ForSummary;
+	SET Group4.BaseTable;
+	DROP dummy_Industry_missing dummy_Region_missing dummy_Revenue_missing dummy_Employees_missing;
+RUN;
+
+PROC PRINT DATA=Group4.BaseTable_ForSummary (OBS=5) NOOBS;
 	TITLE 'Quick Peek: First 5 Rows of the Customer Table';
 RUN;
 
@@ -357,26 +365,6 @@ PROC SGSCATTER DATA=Group4.Insight_6_CorrESG_OrderAmt;
           Total_OrderAmount="Total Order Amount";
 RUN;
 
-PROC ODSTEXT;
-	p "Exploring the Impact of ESG Metrics on Revenue Growth"/ style=[fontsize=11 just=center];
-	p "";
-	p "Vertical Clustering in Total Order Amount Scatterplots: " / style=[fontsize=10 just=left];
-	p "The vertical alignment of points suggests that ESG scores have limited variability, causing multiple companies" / style=[fontsize=8 just=left]; 
-	p "to have different Total Order Amounts despite having the same ESG scores." / style=[fontsize=8 just=left]; 
-	p "";
-	p "Social (S) Scores Are Concentrated in the Lower Range: " / style=[fontsize=10 just=left];
-	p "The histogram for Social scores reveals that most companies perform relatively poorly in Social aspects compared to" / style=[fontsize=8 just=left];
-	p "Environmental and Governance scores." / style=[fontsize=8 just=left];
-	p "";
-	p "Governance (G) Scores Skew Towards Higher Values: " / style=[fontsize=10 just=left];
-	p "Governance scores despite being evenly distributed but showcase a slight skew towards higher values, which" / style=[fontsize=8 just=left]; 
-	p "indicates better overall performance in governance compared to the other ESG components." / style=[fontsize=8 just=left];
-	p "";
-	p "Weak Positive Correlation Between Social (S) and Governance (G): " / style=[fontsize=10 just=left];
-	p "Companies scoring higher in Governance tend to have moderately higher Social scores, depicting some " / style=[fontsize=8 just=left];
-	p "interdependency between these dimensions." / style=[fontsize=8 just=left];
-RUN;
-
 /*########################  PART - IV   #######################*/
 
 DATA Group4.Jonathan_Top_Cust Group4.Tim_Top_Cust;
@@ -448,3 +436,11 @@ DATA Group4.select_year;
 RUN;
 
 ODS PDF CLOSE;
+
+/*------------------------#### END #### ---------------------------------*/
+
+/*Reference:*/
+/*1. The Lille SAS Book: Lora D.Delwiche and Susan J. Slaughter*/
+/*2. Class Notes, Slides and exercise of  BUSINESS ANALYTICS TOOLS-COMMERCIAL Course of MBD 2024 IESEG School of Management, Lille, France*/
+/*3. Resources from GenAI tools*/
+/*4. SAS Documentation and Community*/
